@@ -1,4 +1,5 @@
 var robot = require("robotjs");
+robot.setMouseDelay(0);
 
 class Direction 
 {
@@ -10,7 +11,7 @@ class Direction
 }
 
 // You must modify it according to your framerate
-var framerate = 30;
+var framerate = 50;
 
 var heading, height;
 var aux, c_mar, c_mic;
@@ -20,14 +21,16 @@ var cx, cy;
 
 var x0 = robot.getScreenSize().width / 2, y0 = robot.getScreenSize().height / 2;
 
-var x_sens = 1200.0, y_sens = 1200.0;
+var x_sens = 1500.0, y_sens = 1500.0;
 var pi = 3.141592654;
 
 //The reducer values need to be carefully calibrated, I'm not sure this is the right value
 var gyro_x_reducer = pi, gyro_y_reducer = pi, gyro_z_reducer = pi;
 
 //Direction is the new class I defined, it just has two double fields for angles
-var screen, down;
+var screen = new Direction();
+var down = new Direction();
+
 var screen_x, screen_y, screen_z, down_x, down_y, down_z;
 
 function MoveCursor(x, y)
@@ -124,9 +127,6 @@ function UpdateMouse(sensors, nrOfReceivedData)
 {
 	try
 	{
-		screen = new Direction();
-		down = new Direction();	
-		
 		try
 		{
 			//Neglected first 19 measurements because the console showed some deserialization errors
@@ -158,12 +158,10 @@ function UpdateMouse(sensors, nrOfReceivedData)
 			}
 
 			// Selected fewer measurements in order to reduce lag
-			if (nrOfReceivedData % 10 == 0)
+			// if (nrOfReceivedData % 10 == 0)
 			{
 				ReduceAngles();
-				console.log(screen);
-				console.log(down);
-
+				
 				height = Math.asin(Correct(Math.cos(down.delta) * Math.cos(down.alpha)));
 				aux = Math.acos(Correct(Math.cos(screen.delta) * Math.cos(screen.alpha)));
 
@@ -185,6 +183,23 @@ function UpdateMouse(sensors, nrOfReceivedData)
 				calc_x = x_sens * Math.cos(height) * Math.sin(heading);
 				cx = Math.floor(calc_x) + x0;
 				cy = Math.floor(calc_y) + y0;
+				
+				document.getElementById("sensorsContainer").innerHTML = "screen.apha: " + screen.alpha + "<br>" +
+				"screen.delta: " + screen.delta + "<br>" + "down.apha: " + down.alpha + "<br>" + 
+				"down.delta: " + down.delta + "<br>" + "height: " + height + "<br>" + "aux: " + aux + "<br>" +
+				"heading: " + heading + "<br>" + "calc_x: " + calc_x + "<br>" + "calc_y: " + calc_y + "<br>" +
+				"cx: " + cx + "<br>" + "cy: " + cy;
+
+				// console.log(screen);
+				// console.log(down);
+				// console.log(height);
+				// console.log(aux);
+				// console.log(heading);
+				// console.log(calc_x);
+				// console.log(calc_y);
+				// console.log(cx);
+				// console.log(cy);
+				// console.log("----------------------------------------------");
 
 				// console.log(cx, cy);				
 				MoveCursor(cx, cy);
