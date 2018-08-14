@@ -1,2 +1,2 @@
-# NodeJsHelloWorld
-This is my first project using NodeJS explicit.
+# AirMouse_Server
+An electron server app for the AirMouse_Client.

@@ -15,8 +15,8 @@ const server = http.Server(app);
 server.listen(PORT, IP);
 
 var nrOfReceivedData = 0;
-// var mouse = require('./cursiMouse.js');
-var mouse = require('./mouse.js');
+var mouse = require('./cursiMouse.js');
+// var mouse = require('./mouse.js');
 
 const io = socketIo(server);
 
@@ -28,6 +28,7 @@ io.on('connection', (socket) =>
   });
 
   document.getElementById("stateContainer").innerHTML = "connected";
+  mouse.MoveToCenter();
   console.log(socket.id + " connected.");
 
   socket.on("disconnect", () =>
