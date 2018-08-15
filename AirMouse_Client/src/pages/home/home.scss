@@ -1,0 +1,77 @@
+page-home
+{
+    background-color: color($colors, light, base); 
+}
+
+#homeContainer
+{
+    display: grid;
+
+    background-color: color($colors, primary, base);
+    color: color($colors, light, base);
+
+    padding: 0px 30px 0px 30px;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: 100vh;
+    align-items: center;
+    justify-items: center;    
+
+    transform: skewY(-15deg);
+}
+
+#homeContainer > *
+{
+    transform: skewY(15deg);
+}
+
+#centeredContainer
+{
+    display: grid;
+    width: 100%;
+    letter-spacing: 1px;
+    justify-items: center;
+}
+
+#homeLogo
+{
+    width: 80px;
+}
+
+#homeTitle
+{
+    font-size: 28px;
+}
+
+#homeDescription
+{
+    font-size: 18px;
+    text-align: center;
+}
+
+.connectInputContainer
+{
+    border-radius: 4px;
+}
+
+.connectInputContainer, .connectInputContainer > *
+{
+    background-color: color($colors, light, base) !important;    
+}
+
+.connectInput
+{
+    color: color($colors, dark, base) !important;    
+}
+
+.connectLabel
+{
+    color: color($colors, primary, base) !important;    
+}
+
+#connectButton
+{
+    font-size: 22px;
+    font-weight: 300;
+    text-transform: none;
+}

@@ -1,0 +1,7 @@
+{
+  "name": "AirMouse_Client",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}
