@@ -48,15 +48,39 @@ io.on('connection', (socket) =>
     mouse.MouseClick("left", false);
   });
 
-  socket.on('mouseScroll', (scroll) =>
+  socket.on('mouseDoubleTap', () =>
   {
-    console.log("mouseScroll");
-    mouse.MouseScroll(scroll.scrollX, scroll.scrollY);
+    console.log("doubleTap");
+    mouse.MouseClick("left", true);
   });
 
   socket.on('mouseRightTap', () =>
   {
     console.log("rightTap");
     mouse.MouseClick("right", false);    
+  });
+
+  socket.on('mouseScroll', (scroll) =>
+  {
+    console.log("mouseScroll");
+    mouse.MouseScroll(scroll.scrollX, scroll.scrollY);
+  });
+
+  socket.on('mousePressDown', () =>
+  {
+    console.log("mouseDown");
+    mouse.MouseToggle("down");
+  });
+
+  socket.on('mousePressUp', () =>
+  {
+    console.log("mouseUp");
+    mouse.MouseToggle("up");    
+  });
+
+  socket.on('mousePinch', () =>
+  {
+    console.log("mousePinch");
+    mouse.MousePinch();    
   });
 });

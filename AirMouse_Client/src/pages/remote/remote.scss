@@ -42,15 +42,15 @@
     height: 17%;
     max-height: 100px;
     cursor: pointer;
-    background-color: color($colors, primary, base);
+    background-color: color($colors, dark, base);
 
-    z-index: 100;
+    // z-index: 100;
 }
 
 .mouseButton:active
 {
     transform: perspective(100px) rotateX(10deg);
-    // box-shadow: 1px 1px 4px 2px rgba(0, 0, 0, 0.4);
+    background-color: color($colors, primary, base);
 }
 
 .tapCircle

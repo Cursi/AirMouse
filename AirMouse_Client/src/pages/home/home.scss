@@ -3,34 +3,27 @@ page-home
     background-color: color($colors, light, base); 
 }
 
-#homeContainer
+#backgroundContainer
 {
-    display: grid;
-
-    background-color: color($colors, primary, base);
-    color: color($colors, light, base);
-
-    padding: 0px 30px 0px 30px;
-
-    grid-template-columns: 1fr;
-    grid-template-rows: 100vh;
-    align-items: center;
-    justify-items: center;    
-
+    background-color: color($colors, primary, base);    
+    
+    height: 100%;
     transform: skewY(-15deg);
-}
-
-#homeContainer > *
-{
-    transform: skewY(15deg);
 }
 
 #centeredContainer
 {
-    display: grid;
+    position: absolute;
     width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    color: color($colors, light, base);
+    
+    text-align: center;
+    padding: 0px 30px 0px 30px;
     letter-spacing: 1px;
-    justify-items: center;
 }
 
 #homeLogo

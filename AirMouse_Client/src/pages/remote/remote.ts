@@ -45,7 +45,7 @@ export class RemotePage
   mouseCanvas: any;
   mc: any;
 
-  doubleClickDelay: number = 125;
+  doubleClickDelay: number = 200;
   numberOfTaps: number = 0;
   doubleClickTimer: any = null;
 
@@ -180,8 +180,9 @@ export class RemotePage
     {
       this.DrawCircleTap(event.srcEvent.clientX, event.srcEvent.clientY, true);    
   
+      console.log(event.scale);
       // console.log("mousePinch");
-      this.socket.emit('mousePinch');
+      this.socket.emit('mousePinch', event.scale);
     }
   }
   
@@ -226,6 +227,9 @@ export class RemotePage
     }
     else
     {
+      document.getElementById("mouseLeftButton").remove();
+      document.getElementById("mouseRightButton").remove();
+
       this.mouseCanvas.innerHTML = 
         "<span id='containerCatch'>" +
           "<span id='appNameCatch'>AirMouse</span>" +  

@@ -1,5 +1,6 @@
 var robot = require("robotjs");
 robot.setMouseDelay(0);
+robot.setKeyboardDelay(0);
 
 const maxScreenDimension = Math.max(robot.getScreenSize().width, robot.getScreenSize().height);
 
@@ -29,6 +30,11 @@ function MouseClick(clickType, isDouble)
     robot.mouseClick(clickType, isDouble);
 }
 
+function MouseToggle(toggleType)
+{
+    robot.mouseToggle(toggleType);
+}
+
 function MouseScroll(scrollX, scrollY)
 {
     scrollX *= scrollSensitivity;
@@ -38,6 +44,54 @@ function MouseScroll(scrollX, scrollY)
 
     if (maxAbsScroll == Math.abs(scrollX)) robot.scrollMouse(Math.round(scrollX), 0);
     else robot.scrollMouse(0, Math.round(scrollY));
+}
+
+setTimeout(() =>
+{
+    robot.keyToggle("control", "down");
+
+    for(var index = 0; index < 10; index++)
+    {
+        robot.keyTap("+");    
+    }
+
+    setTimeout(() =>
+    {
+        robot.keyToggle("control", "up");
+    }, 10);
+}, 1000);
+
+function Zoom(zoomType, numberOfTimes)
+{
+    robot.keyToggle("control", "down");
+
+    for(var index = 0; index < numberOfTimes; index++)
+    {
+        switch(zoomType)
+        {
+            case "in":
+            {
+                robot.keyTap("+");    
+                break;
+            }
+            case "out":
+            {
+                robot.keyTap("-");
+                break;
+            }
+            default: break;
+        }
+    }
+
+    setTimeout(() =>
+    {
+        robot.keyToggle("control", "up");
+    }, 10);
+}
+
+function MousePinch(scale)
+{
+    
 }
 
 function UpdateMouse(gyro, nrOfReceivedData)
@@ -59,5 +113,7 @@ module.exports =
     UpdateMouse: UpdateMouse,
     MoveToCenter: MoveToCenter,
     MouseClick: MouseClick,
-    MouseScroll: MouseScroll
+    MouseScroll: MouseScroll,
+    MouseToggle: MouseToggle,
+    MousePinch: MousePinch
 };
