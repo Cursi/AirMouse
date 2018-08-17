@@ -36,7 +36,8 @@ $app-direction: ltr;
 $colors: (
   primary:    rgb(25, 131, 131),
   light:      #f4f4f4,
-  dark:       #222
+  dark:       #222,
+  fadedPrimary: rgba(25, 131, 131, 0.4)
 );
 
 

@@ -9,6 +9,7 @@
 
     width: 100%;
     font-size: 20px;
+    background-color: color($colors, light, base);    
 }
 
 #containerCatch
@@ -20,4 +21,83 @@
 {
     color: color($colors, primary, base);
     font-weight: 500;
+}
+
+#mouseLeftButton
+{
+    left:0;
+}
+
+#mouseRightButton
+{
+    right: 0;
+}
+
+.mouseButton
+{
+    position: fixed;
+    bottom: 0;
+
+    width: calc(50% - 1px);
+    height: 17%;
+    max-height: 100px;
+    cursor: pointer;
+    background-color: color($colors, primary, base);
+
+    z-index: 100;
+}
+
+.mouseButton:active
+{
+    transform: perspective(100px) rotateX(10deg);
+    // box-shadow: 1px 1px 4px 2px rgba(0, 0, 0, 0.4);
+}
+
+.tapCircle
+{
+    position: fixed;
+
+    border-radius: 50%;
+    background-color: color($colors, fadedPrimary, base);
+
+    animation: tapCircleAnimation 0.3s normal forwards;        
+}
+
+.tapCircle.fixedCircle
+{
+    animation: fixedCircleAnimation 0.3s normal forwards;    
+}
+
+@keyframes fixedCircleAnimation 
+{
+    from 
+    {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to
+    {
+        opacity: 1;
+        transform: scale(1);
+        background-color: color($colors, primary, base);
+    }
+}
+
+@keyframes tapCircleAnimation 
+{
+    from 
+    {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    50% 
+    {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to
+    {
+        opacity: 0;
+        transform: scale(0.7);        
+    }
 }

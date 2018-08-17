@@ -1,1 +1,5 @@
 <div id="canvas"></div>
+<div id="mouseLeftButton" class="mouseButton" (press)="PressDown()" (pressup)="PressUp()" (tap)="SingleTap($event)"></div>
+<div id="mouseRightButton" class="mouseButton" (tap)="RightTap()"></div>
+
+<span class="tapCircle"></span>

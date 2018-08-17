@@ -45,62 +45,146 @@ export class RemotePage
   mouseCanvas: any;
   mc: any;
 
-  doubleClickDelay: number = 170;
+  doubleClickDelay: number = 125;
   numberOfTaps: number = 0;
   doubleClickTimer: any = null;
 
-  SingleTapTrivial()
+  mousePressedDown: boolean = false;
+
+  DrawCircleTap(clientX, clientY, isScrollCircle)
   {
-    console.log("mouseSingleTap");
-    this.socket.emit('mouseSingleTap');
+    if(clientX != null && clientY != null)
+    {
+      var tapCircle = document.createElement("span");
+      tapCircle.classList.add("tapCircle");
+  
+      if(isScrollCircle)
+      {
+        tapCircle.style.width = "25px";
+        tapCircle.style.height = "25px";
+      }
+      else
+      {
+        tapCircle.style.width = "50px";
+        tapCircle.style.height = "50px";
+      }
+
+      tapCircle.style.left = clientX - 25 + "px";
+      tapCircle.style.top = clientY - 25 + "px";
+      
+      if(this.mousePressedDown)
+      {
+        tapCircle.classList.add("fixedCircle");
+        tapCircle.id = "mousePressedCircle";
+      }
+      else
+      {
+        setTimeout(() => 
+        {
+          document.body.removeChild(tapCircle);
+        }, 300);
+      }
+
+      document.body.appendChild(tapCircle);
+    }
   }
 
-  // SingleTap()
-  // {
-  //   this.numberOfTaps++;
+  SingleTap(event)
+  {
+    this.numberOfTaps++;
 
-  //   if(this.doubleClickTimer == null)
-  //   {
-  //     this.doubleClickTimer = setTimeout(() =>
-  //     {
-  //       switch(this.numberOfTaps)
-  //       {
-  //         case 1: 
-  //         {
-  //           console.log("mouseSingleTap");
-  //           this.socket.emit('mouseSingleTap');
-  //           break;
-  //         }
-  //         case 2: 
-  //         {
-  //           console.log("mousedoubleTap");
-  //           this.socket.emit('mouseDoubleTap');
-  //           break;
-  //         }
-  //         default: break;
-  //       }
+    if(this.doubleClickTimer == null)
+    {
+      this.doubleClickTimer = setTimeout(() =>
+      {
+        this.DrawCircleTap(event.clientX, event.clientY, false);
+        
+        switch(this.numberOfTaps)
+        {
+          case 1: 
+          {
+            // console.log("mouseSingleTap");
+            this.socket.emit('mouseSingleTap');
+            break;
+          }
+          case 2: 
+          {
+            // console.log("mousedoubleTap");
+            this.socket.emit('mouseDoubleTap');
+            break;
+          }
+          default: break;
+        }
 
-  //       this.numberOfTaps = 0;
-  //       this.doubleClickTimer = null;
-  //     }, this.doubleClickDelay);
-  //   }
-  // }
+        this.numberOfTaps = 0;
+        this.doubleClickTimer = null;
+      }, this.doubleClickDelay);
+    }
+  }
   
   Pan(event)
   {
-    this.scroll.scrollX = event.velocityX;
-    this.scroll.scrollY = event.velocityY;
-
-    console.log("mouseScroll: ", this.scroll);
-    this.socket.emit('mouseScroll', this.scroll);    
+    if(!this.mousePressedDown)
+    {
+      this.DrawCircleTap(event.center.x, event.center.y, true);
+  
+      this.scroll.scrollX = event.velocityX;
+      this.scroll.scrollY = event.velocityY;
+  
+      // console.log("mouseScroll");
+      this.socket.emit('mouseScroll', this.scroll); 
+    }
   }
 
-  Press()
+  PanEnd()
   {
-    console.log("mouseRightTap");
+    if(this.mousePressedDown)
+    {
+      // console.log("pan end");
+      this.PressUp();
+    }
+  }
+
+  RightTap()
+  {
+    // console.log("mouseRightTap");
     this.socket.emit('mouseRightTap');
   }
 
+  PressDown(event)
+  {
+    this.mousePressedDown = true;
+    if(event != null) this.DrawCircleTap(event.center.x, event.center.y, false);    
+
+    // console.log("mousePressDown");
+    this.socket.emit('mousePressDown');
+  }
+
+  PressUp()
+  {
+    this.mousePressedDown = false; 
+    var mousePressedCircle = document.getElementById("mousePressedCircle");
+    try
+    {
+      document.body.removeChild(mousePressedCircle);
+    }
+    catch(error) { }
+
+    // console.log("mousePressUp");
+    this.socket.emit('mousePressUp');
+  }
+
+  Pinch(event)
+  {
+    if(!this.mousePressedDown)
+    {
+      this.DrawCircleTap(event.srcEvent.clientX, event.srcEvent.clientY, true);    
+  
+      // console.log("mousePinch");
+      this.socket.emit('mousePinch');
+    }
+  }
+  
   SendGyroData()
   {
     try
@@ -124,22 +208,21 @@ export class RemotePage
   {
     this.mouseCanvas = document.getElementById("canvas");
     this.SendGyroData();
+
+    this.gyroAvailable = true;
     
     if(this.gyroAvailable)
     {
       this.mc = new Hammer(this.mouseCanvas);
-      // this.mc.add(
-      // [ 
-      //   new Hammer.Tap(), 
-      //   new Hammer.Pan(), 
-      //   new Hammer.Press() 
-      // ]);
-
+      this.mc.add(new Hammer.Pinch());
       this.mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
 
-      this.mc.on("tap", () => this.SingleTapTrivial());
+      this.mc.on("tap", () => this.SingleTap(event));
       this.mc.on("pan", (event) => this.Pan(event));
-      this.mc.on("press", () => this.Press());
+      this.mc.on("panend", () => this.PanEnd());
+      this.mc.on("press", (event) => this.PressDown(event));
+      this.mc.on("pressup", () => this.PressUp());
+      this.mc.on("pinch", (event) => this.Pinch(event));
     }
     else
     {
@@ -149,5 +232,5 @@ export class RemotePage
           " is not available for your device. :(" +
         "</span>";
     }
-  } 
+  }
 }
