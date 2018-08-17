@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --prune=true --out=release-builds",
-    "package-win": "electron-packager . airmouse_server --overwrite --asar --platform=win32 --arch=x64 --prune=true --out=release-builds --version-string.CompanyName=CR --version-string.FileDescription=CR --version-string.ProductName=\"airmouse_server\"",
+    "package-win": "electron-packager . airmouse_server --overwrite --asar --platform=win32 --arch=x64 --prune=true --icon=img/icon.ico --out=release-builds --version-string.CompanyName=CR --version-string.FileDescription=CR --version-string.ProductName=\"airmouse_server\"",
     "package-linux": "electron-packager . airmouse_server --overwrite --asar --platform=linux --arch=x64 --prune=true --out=release-builds",
     "rebuild": "./node_modules/.bin/electron-rebuild"
   },

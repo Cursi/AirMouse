@@ -7,10 +7,11 @@ const maxScreenDimension = Math.max(robot.getScreenSize().width, robot.getScreen
 const movePreferenceFactor = 0.94;
 const moveSensitivity = maxScreenDimension / 100 * movePreferenceFactor;
 
-const scrollPreferenceFactor = 0.5;
+const scrollPreferenceFactor = 0.4;
 const scrollSensitivity = maxScreenDimension / 10 * scrollPreferenceFactor;
 
-const epsilonGyroVelocity = 0.0115;
+var oldPinchScale = 1;
+const pinchScaleStep = 0.15;
 
 function MoveToCenter()
 {
@@ -46,27 +47,9 @@ function MouseScroll(scrollX, scrollY)
     else robot.scrollMouse(0, Math.round(scrollY));
 }
 
-setTimeout(() =>
+function Zoom(zoomType)
 {
     robot.keyToggle("control", "down");
-
-    for(var index = 0; index < 10; index++)
-    {
-        robot.keyTap("+");    
-    }
-
-    setTimeout(() =>
-    {
-        robot.keyToggle("control", "up");
-    }, 10);
-}, 1000);
-
-function Zoom(zoomType, numberOfTimes)
-{
-    robot.keyToggle("control", "down");
-
-    for(var index = 0; index < numberOfTimes; index++)
-    {
         switch(zoomType)
         {
             case "in":
@@ -81,7 +64,6 @@ function Zoom(zoomType, numberOfTimes)
             }
             default: break;
         }
-    }
 
     setTimeout(() =>
     {
@@ -91,21 +73,29 @@ function Zoom(zoomType, numberOfTimes)
 
 function MousePinch(scale)
 {
-    
+    console.log("oldScale: " + oldPinchScale);
+    console.log("scale: " + scale);
+
+    let scaleDifference = Math.abs(scale - oldPinchScale);
+
+    if(scaleDifference > pinchScaleStep)
+    {
+        if(scale < oldPinchScale) Zoom("out");
+        else Zoom("in");
+
+        oldPinchScale = scale;
+    }
 }
 
 function UpdateMouse(gyro, nrOfReceivedData)
 {
-    if(Math.abs(gyro.gyroZ) > epsilonGyroVelocity && Math.abs(gyro.gyroX) > epsilonGyroVelocity)
-    {
-        let currentX = robot.getMousePos().x;
-        let currentY = robot.getMousePos().y;
+    let currentX = robot.getMousePos().x;
+    let currentY = robot.getMousePos().y;
 
-        var newX = currentX - gyro.gyroZ * moveSensitivity; 
-        var newY = currentY - gyro.gyroX * moveSensitivity;
+    var newX = currentX - gyro.gyroZ * moveSensitivity; 
+    var newY = currentY - gyro.gyroX * moveSensitivity;
 
-        MoveCursor(Math.round(newX), Math.round(newY));
-    }
+    MoveCursor(Math.round(newX), Math.round(newY));
 }
 
 module.exports = 
@@ -115,5 +105,6 @@ module.exports =
     MouseClick: MouseClick,
     MouseScroll: MouseScroll,
     MouseToggle: MouseToggle,
-    MousePinch: MousePinch
+    MousePinch: MousePinch,
+    oldPinchScale: oldPinchScale
 };

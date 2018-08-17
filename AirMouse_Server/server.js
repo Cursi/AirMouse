@@ -20,7 +20,7 @@ var mouse = require('./mouse.js');
 const io = socketIo(server);
 
 io.on('connection', (socket) =>
-{
+{ 
   socket.emit("connected",
   {
     greeting: "Hi, bro!"
@@ -78,9 +78,15 @@ io.on('connection', (socket) =>
     mouse.MouseToggle("up");    
   });
 
-  socket.on('mousePinch', () =>
+  socket.on('mousePinch', (scale) =>
   {
     console.log("mousePinch");
-    mouse.MousePinch();    
+    mouse.MousePinch(scale);    
+  });
+
+  socket.on('mousePinchEnd', (scale) =>
+  {
+    console.log("mousePinchEnd");
+    mouse.oldPinchScale = 1;
   });
 });

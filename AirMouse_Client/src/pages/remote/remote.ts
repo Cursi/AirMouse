@@ -35,6 +35,7 @@ export class RemotePage
     gyroZ: null
   };
 
+  epsilonGyroVelocity: number = 0.0115;
   
   scroll =
   {
@@ -103,13 +104,11 @@ export class RemotePage
         {
           case 1: 
           {
-            // console.log("mouseSingleTap");
             this.socket.emit('mouseSingleTap');
             break;
           }
           case 2: 
           {
-            // console.log("mousedoubleTap");
             this.socket.emit('mouseDoubleTap');
             break;
           }
@@ -131,7 +130,6 @@ export class RemotePage
       this.scroll.scrollX = event.velocityX;
       this.scroll.scrollY = event.velocityY;
   
-      // console.log("mouseScroll");
       this.socket.emit('mouseScroll', this.scroll); 
     }
   }
@@ -140,14 +138,12 @@ export class RemotePage
   {
     if(this.mousePressedDown)
     {
-      // console.log("pan end");
       this.PressUp();
     }
   }
 
   RightTap()
   {
-    // console.log("mouseRightTap");
     this.socket.emit('mouseRightTap');
   }
 
@@ -156,7 +152,6 @@ export class RemotePage
     this.mousePressedDown = true;
     if(event != null) this.DrawCircleTap(event.center.x, event.center.y, false);    
 
-    // console.log("mousePressDown");
     this.socket.emit('mousePressDown');
   }
 
@@ -164,13 +159,13 @@ export class RemotePage
   {
     this.mousePressedDown = false; 
     var mousePressedCircle = document.getElementById("mousePressedCircle");
+    
     try
     {
       document.body.removeChild(mousePressedCircle);
     }
     catch(error) { }
 
-    // console.log("mousePressUp");
     this.socket.emit('mousePressUp');
   }
 
@@ -179,11 +174,13 @@ export class RemotePage
     if(!this.mousePressedDown)
     {
       this.DrawCircleTap(event.srcEvent.clientX, event.srcEvent.clientY, true);    
-  
-      console.log(event.scale);
-      // console.log("mousePinch");
       this.socket.emit('mousePinch', event.scale);
     }
+  }
+
+  PinchEnd()
+  {
+    this.socket.emit('mousePinchEnd');    
   }
   
   SendGyroData()
@@ -192,11 +189,13 @@ export class RemotePage
     {
       this.gyroscope.watch(this.gyroOptions).subscribe((orientation: GyroscopeOrientation) =>
       {
-        this.gyro.gyroX = orientation.x;
-        this.gyro.gyroY = orientation.y;
-        this.gyro.gyroZ = orientation.z;
-  
-        this.socket.emit ('gyroChanged', this.gyro);
+        if(Math.abs(orientation.z) > this.epsilonGyroVelocity && Math.abs(orientation.x) > this.epsilonGyroVelocity)
+        {
+          this.gyro.gyroX = orientation.x;
+          this.gyro.gyroZ = orientation.z;
+    
+          this.socket.emit ('gyroChanged', this.gyro);
+        }
       });
     }
     catch(error)
@@ -210,7 +209,7 @@ export class RemotePage
     this.mouseCanvas = document.getElementById("canvas");
     this.SendGyroData();
 
-    this.gyroAvailable = true;
+    // this.gyroAvailable = true;
     
     if(this.gyroAvailable)
     {
@@ -224,6 +223,7 @@ export class RemotePage
       this.mc.on("press", (event) => this.PressDown(event));
       this.mc.on("pressup", () => this.PressUp());
       this.mc.on("pinch", (event) => this.Pinch(event));
+      this.mc.on("pinchend", () => this.PinchEnd());      
     }
     else
     {
