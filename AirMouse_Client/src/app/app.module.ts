@@ -8,6 +8,8 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { RemotePage } from '../pages/remote/remote';
 
+import "hammerjs";
+
 @NgModule({
   declarations: [
     MyApp,

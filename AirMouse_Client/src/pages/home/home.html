@@ -8,7 +8,7 @@
     <br><br>
       <ion-item no-lines class="connectInputContainer">
         <ion-label class="connectLabel">IP</ion-label>
-        <ion-input type="number" class="connectInput" [(ngModel)]='IP'></ion-input>
+        <ion-input class="connectInput" [(ngModel)]='IP'></ion-input>
       </ion-item>
       <br>
       <ion-item class="connectInputContainer">
@@ -16,6 +16,6 @@
         <ion-input type="number" min="1" max="65535" class="connectInput" [(ngModel)]='PORT'></ion-input>
       </ion-item>
     <br><br>
-    <button id="connectButton" ion-button color="light" outline (click)="Connect();">Connect</button>      
+    <button [disabled]="connectDisabled" id="connectButton" ion-button color="light" outline (click)="Connect();">Connect</button>      
   </div>
 </div>

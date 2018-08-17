@@ -16,7 +16,6 @@ server.listen(PORT, IP);
 
 var nrOfReceivedData = 0;
 var mouse = require('./cursiMouse.js');
-// var mouse = require('./mouse.js');
 
 const io = socketIo(server);
 
@@ -37,9 +36,27 @@ io.on('connection', (socket) =>
     console.info(socket.id + " disconnected.");
   });
 
-  socket.on('sensorsChanged', (sensors) => 
+  socket.on('gyroChanged', (gyro) => 
   {
     nrOfReceivedData++;
-    mouse.UpdateMouse(sensors, nrOfReceivedData);
+    mouse.UpdateMouse(gyro, nrOfReceivedData);
+  });
+
+  socket.on('mouseSingleTap', () =>
+  {
+    console.log("singleTap");
+    mouse.MouseClick("left", false);
+  });
+
+  socket.on('mouseScroll', (scroll) =>
+  {
+    console.log("mouseScroll");
+    mouse.MouseScroll(scroll.scrollX, scroll.scrollY);
+  });
+
+  socket.on('mouseRightTap', () =>
+  {
+    console.log("rightTap");
+    mouse.MouseClick("right", false);    
   });
 });
