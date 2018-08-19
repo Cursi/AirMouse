@@ -4,14 +4,17 @@ robot.setKeyboardDelay(0);
 
 const maxScreenDimension = Math.max(robot.getScreenSize().width, robot.getScreenSize().height);
 
-const movePreferenceFactor = 0.94;
-const moveSensitivity = maxScreenDimension / 100 * movePreferenceFactor;
+const linearAccelerationFactor = 1.075;
+const quadraticAccelerationFactor = 0.25;
+const movePreferenceFactor = 0.7;
+var moveSensitivity = maxScreenDimension / 120 * movePreferenceFactor;
 
-const scrollPreferenceFactor = 0.4;
-const scrollSensitivity = maxScreenDimension / 10 * scrollPreferenceFactor;
+const scrollSweetSpot = 200;
+const scrollPreferenceFactor = 0.8;
+var scrollSensitivity = scrollSweetSpot * scrollPreferenceFactor;
 
 var oldPinchScale = 1;
-const pinchScaleStep = 0.15;
+var pinchSensitivity = 0.4;
 
 function MoveToCenter()
 {
@@ -68,15 +71,13 @@ function Zoom(zoomType)
     setTimeout(() =>
     {
         robot.keyToggle("control", "up");
-    }, 10);
+    }, 1);
 }
 
 function MousePinch(scale)
 {
-    console.log("oldScale: " + oldPinchScale);
-    console.log("scale: " + scale);
-
     let scaleDifference = Math.abs(scale - oldPinchScale);
+    let pinchScaleStep = 0.25 * (1 - pinchSensitivity / 2);    
 
     if(scaleDifference > pinchScaleStep)
     {
@@ -89,11 +90,17 @@ function MousePinch(scale)
 
 function UpdateMouse(gyro, nrOfReceivedData)
 {
-    let currentX = robot.getMousePos().x;
-    let currentY = robot.getMousePos().y;
+    let linearXSpeed = linearAccelerationFactor * gyro.gyroZ;
+    let linearYSpeed = linearAccelerationFactor * gyro.gyroX;
 
-    var newX = currentX - gyro.gyroZ * moveSensitivity; 
-    var newY = currentY - gyro.gyroX * moveSensitivity;
+    let quadraticXSpeed = quadraticAccelerationFactor * Math.sign(gyro.gyroZ) * Math.pow(gyro.gyroZ, 2);
+    let quadraticYSpeed = quadraticAccelerationFactor * Math.sign(gyro.gyroX) * Math.pow(gyro.gyroX, 2);
+
+    let newXSpeed = linearXSpeed + quadraticXSpeed;
+    let newYSpeed = linearYSpeed + quadraticYSpeed;
+
+    let newX = robot.getMousePos().x - newXSpeed * moveSensitivity; 
+    let newY = robot.getMousePos().y - newYSpeed * moveSensitivity;
 
     MoveCursor(Math.round(newX), Math.round(newY));
 }

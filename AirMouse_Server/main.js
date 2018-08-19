@@ -51,16 +51,16 @@ function createWindow ()
   // Create the browser window.
   mainWindow = new BrowserWindow(
   {
-    show: false,
+    show: true,
     width: 260, 
     height: 260, 
-    maximizable: false,
-    resizable: false,
+    maximizable: true,
+    resizable: true,
     icon: iconPath
   });
   mainWindow.setPosition(0,0);
 
-  mainWindow.setMenu(null);
+  // mainWindow.setMenu(null);
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format(
