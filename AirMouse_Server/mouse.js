@@ -10,8 +10,12 @@ const movePreferenceFactor = 0.7;
 var moveSensitivity = maxScreenDimension / 120 * movePreferenceFactor;
 
 const scrollSweetSpot = 200;
-const scrollPreferenceFactor = 0.8;
+const scrollPreferenceFactor = 0.6;
 var scrollSensitivity = scrollSweetSpot * scrollPreferenceFactor;
+var oldScrollX, oldScrollY;
+const scrollIntervalTimeout = 7;
+var scrollXInterval = null, scrollYInterval = null;
+var scrollPortionX = 40, scrollPortionY = 40;
 
 var oldPinchScale = 1;
 var pinchSensitivity = 0.4;
@@ -39,15 +43,66 @@ function MouseToggle(toggleType)
     robot.mouseToggle(toggleType);
 }
 
+function KeepMouseScrolling()
+{
+    if (scrollXInterval == null && oldScrollX != 0)
+    {
+        let oldScrollXSign = Math.sign(oldScrollX);
+
+        scrollXInterval = setInterval(() =>
+        {
+            scrollPortionX -= (1 - scrollPreferenceFactor) / 3;            
+            oldScrollX -= scrollPortionX * oldScrollXSign;           
+            robot.scrollMouse(scrollPortionX * oldScrollXSign, 0);
+
+            if(oldScrollXSign != Math.sign(oldScrollX))
+            {
+                scrollPortionX = 40;
+                oldScrollX = 0;                
+                clearInterval(scrollXInterval);
+                scrollXInterval = null;
+            }
+        }, scrollIntervalTimeout);
+    }
+
+    if (scrollYInterval == null && oldScrollY != 0)
+    {
+        let oldScrollYSign = Math.sign(oldScrollY);
+
+        scrollYInterval = setInterval(() =>
+        {
+            scrollPortionY -= (1 - scrollPreferenceFactor) / 3;
+            oldScrollY -= scrollPortionY * oldScrollYSign;
+            robot.scrollMouse(0, scrollPortionY * oldScrollYSign);
+
+            if(oldScrollYSign != Math.sign(oldScrollY))
+            {
+                scrollPortionY = 40;
+                oldScrollY = 0;
+                clearInterval(scrollYInterval);
+                scrollYInterval = null;
+            }
+        }, scrollIntervalTimeout);
+    }
+}
+
 function MouseScroll(scrollX, scrollY)
 {
     scrollX *= scrollSensitivity;
     scrollY *= scrollSensitivity;
-
+    
     let maxAbsScroll = Math.max(Math.abs(scrollX), Math.abs(scrollY));
 
-    if (maxAbsScroll == Math.abs(scrollX)) robot.scrollMouse(Math.round(scrollX), 0);
-    else robot.scrollMouse(0, Math.round(scrollY));
+    if (maxAbsScroll == Math.abs(scrollX))
+    {
+        oldScrollX = Math.round(scrollX) / scrollPortionX * scrollSweetSpot;
+        robot.scrollMouse(Math.round(scrollX), 0);
+    }
+    else
+    {
+        oldScrollY = Math.round(scrollY) / scrollPortionY * scrollSweetSpot;
+        robot.scrollMouse(0, Math.round(scrollY));
+    }
 }
 
 function Zoom(zoomType)
@@ -109,9 +164,13 @@ module.exports =
 {
     UpdateMouse: UpdateMouse,
     MoveToCenter: MoveToCenter,
+
     MouseClick: MouseClick,
-    MouseScroll: MouseScroll,
     MouseToggle: MouseToggle,
+
+    MouseScroll: MouseScroll,
+    KeepMouseScrolling: KeepMouseScrolling,
+    
     MousePinch: MousePinch,
     oldPinchScale: oldPinchScale
 };

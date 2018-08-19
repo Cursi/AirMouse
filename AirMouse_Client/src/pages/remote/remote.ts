@@ -140,6 +140,8 @@ export class RemotePage
     {
       this.PressUp();
     }
+
+    this.socket.emit('mouseScrollEnd');
   }
 
   RightTap()

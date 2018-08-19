@@ -28,12 +28,10 @@ io.on('connection', (socket) =>
 
   document.getElementById("stateContainer").innerHTML = "connected";
   mouse.MoveToCenter();
-  console.log(socket.id + " connected.");
 
   socket.on("disconnect", () =>
   {
     document.getElementById("stateContainer").innerHTML = "disconnected";
-    console.info(socket.id + " disconnected.");
   });
 
   socket.on('gyroChanged', (gyro) => 
@@ -44,49 +42,46 @@ io.on('connection', (socket) =>
 
   socket.on('mouseSingleTap', () =>
   {
-    console.log("singleTap");
     mouse.MouseClick("left", false);
   });
 
   socket.on('mouseDoubleTap', () =>
   {
-    console.log("doubleTap");
     mouse.MouseClick("left", true);
   });
 
   socket.on('mouseRightTap', () =>
   {
-    console.log("rightTap");
     mouse.MouseClick("right", false);    
   });
 
   socket.on('mouseScroll', (scroll) =>
   {
-    console.log("mouseScroll");
     mouse.MouseScroll(scroll.scrollX, scroll.scrollY);
+  });
+
+  socket.on('mouseScrollEnd', () =>
+  {
+    mouse.KeepMouseScrolling();
   });
 
   socket.on('mousePressDown', () =>
   {
-    console.log("mouseDown");
     mouse.MouseToggle("down");
   });
 
   socket.on('mousePressUp', () =>
   {
-    console.log("mouseUp");
     mouse.MouseToggle("up");    
   });
 
   socket.on('mousePinch', (scale) =>
   {
-    console.log("mousePinch");
     mouse.MousePinch(scale);    
   });
 
   socket.on('mousePinchEnd', (scale) =>
   {
-    console.log("mousePinchEnd");
     mouse.oldPinchScale = 1;
   });
 });
