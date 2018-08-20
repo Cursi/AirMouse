@@ -60,12 +60,12 @@
     border-radius: 50%;
     background-color: color($colors, fadedPrimary, base);
 
-    animation: tapCircleAnimation 0.3s normal forwards;        
+    animation: tapCircleAnimation 0.3s normal forwards ease-in;        
 }
 
 .tapCircle.fixedCircle
 {
-    animation: fixedCircleAnimation 0.3s normal forwards;    
+    animation: fixedCircleAnimation 0.3s normal forwards ease-in;    
 }
 
 @keyframes fixedCircleAnimation 

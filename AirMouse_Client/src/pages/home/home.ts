@@ -68,6 +68,7 @@ export class HomePage implements OnInit
 
   ngOnInit()
   {
-    
+    this.IP = "192.168.43.229";
+    this.PORT = "1234";
   }
 }

@@ -51,7 +51,9 @@ function KeepMouseScrolling()
 
         scrollXInterval = setInterval(() =>
         {
-            scrollPortionX -= (1 - scrollPreferenceFactor) / 3;            
+            // Tricky code that needs to be changed            
+            scrollPortionX -= (1 - scrollPreferenceFactor) / 3;    
+                    
             oldScrollX -= scrollPortionX * oldScrollXSign;           
             robot.scrollMouse(scrollPortionX * oldScrollXSign, 0);
 
@@ -71,7 +73,9 @@ function KeepMouseScrolling()
 
         scrollYInterval = setInterval(() =>
         {
+            // Tricky code that needs to be changed
             scrollPortionY -= (1 - scrollPreferenceFactor) / 3;
+
             oldScrollY -= scrollPortionY * oldScrollYSign;
             robot.scrollMouse(0, scrollPortionY * oldScrollYSign);
 

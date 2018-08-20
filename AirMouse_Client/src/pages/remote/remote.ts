@@ -1,21 +1,21 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
+import { Insomnia } from '@ionic-native/insomnia';
 import { Gyroscope, GyroscopeOrientation, GyroscopeOptions } from '@ionic-native/gyroscope';
 import * as io from 'socket.io-client';
-
-// import { Hammer } from "ionic-angular/gestures/hammer";
-// import {Gesture} from 'ionic-angular/gestures/gesture'
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @IonicPage()
 @Component({
   selector: 'page-remote',
   templateUrl: 'remote.html',
-  providers: [ Gyroscope ]
+  providers: [ Gyroscope, Insomnia]
 })
+
 export class RemotePage
 {
-  constructor(public navCtrl: NavController, public navParams: NavParams, private gyroscope: Gyroscope) 
+  constructor(public navCtrl: NavController, public navParams: NavParams, private gyroscope: Gyroscope, private insomnia: Insomnia) 
   {
 
   }
@@ -46,7 +46,7 @@ export class RemotePage
   mouseCanvas: any;
   mc: any;
 
-  doubleClickDelay: number = 200;
+  doubleClickDelay: number = 150;
   numberOfTaps: number = 0;
   doubleClickTimer: any = null;
 
@@ -104,12 +104,21 @@ export class RemotePage
         {
           case 1: 
           {
-            this.socket.emit('mouseSingleTap');
+            console.log("single tap");  
+            this.wasSingleTap = true;
+
+            setTimeout(() =>
+            {
+              this.wasSingleTap = false;
+            }, 150);
+            // this.socket.emit('mouseSingleTap');
             break;
           }
-          case 2: 
+          case 2:
           {
-            this.socket.emit('mouseDoubleTap');
+            this.wasSingleTap = false;
+            console.log("double tap");            
+            // this.socket.emit('mouseDoubleTap');
             break;
           }
           default: break;
@@ -130,7 +139,8 @@ export class RemotePage
       this.scroll.scrollX = event.velocityX;
       this.scroll.scrollY = event.velocityY;
   
-      this.socket.emit('mouseScroll', this.scroll); 
+      console.log("mouseScroll");      
+      // this.socket.emit('mouseScroll', this.scroll); 
     }
   }
 
@@ -141,48 +151,81 @@ export class RemotePage
       this.PressUp();
     }
 
-    this.socket.emit('mouseScrollEnd');
+    console.log("mouseScrollEnd");    
+    // this.socket.emit('mouseScrollEnd');
   }
 
   RightTap()
   {
-    this.socket.emit('mouseRightTap');
+    console.log("mouseRightTap");    
+    // this.socket.emit('mouseRightTap');
   }
+
+  wasSingleTap: boolean = false;  
 
   PressDown(event)
   {
     this.mousePressedDown = true;
-    if(event != null) this.DrawCircleTap(event.center.x, event.center.y, false);    
+    if(event != null) this.DrawCircleTap(event.center.x, event.center.y, false);
 
-    this.socket.emit('mousePressDown');
+    if(this.wasSingleTap)
+    {
+      console.log("hold");
+    }
+    else
+    {
+      console.log("right click");
+    }
+
+    // this.socket.emit('mousePressDown');
   }
 
   PressUp()
   {
-    this.mousePressedDown = false; 
-    var mousePressedCircle = document.getElementById("mousePressedCircle");
+    this.mousePressedDown = false;
+    this.wasSingleTap = false;
     
-    try
-    {
-      document.body.removeChild(mousePressedCircle);
-    }
-    catch(error) { }
+    this.RemoveCircle();
 
-    this.socket.emit('mousePressUp');
+    console.log("mousePressUp");    
+    // this.socket.emit('mousePressUp');
   }
 
   Pinch(event)
   {
     if(!this.mousePressedDown)
     {
-      this.DrawCircleTap(event.srcEvent.clientX, event.srcEvent.clientY, true);    
-      this.socket.emit('mousePinch', event.scale);
+      this.DrawCircleTap(event.srcEvent.clientX, event.srcEvent.clientY, true);
+      console.log("mousePinch");      
+      // this.socket.emit('mousePinch', event.scale);
     }
   }
 
   PinchEnd()
   {
-    this.socket.emit('mousePinchEnd');    
+    if(this.mousePressedDown)
+    {
+      this.mousePressedDown = false;
+      this.RemoveCircle();
+
+      console.log("we got here");
+    }
+    else
+    {
+      console.log("mousePinchEnd");
+      // this.socket.emit('mousePinchEnd');
+    }
+  }
+
+  RemoveCircle()
+  {
+    var mousePressedCircle = document.getElementById("mousePressedCircle");
+
+    try
+    {
+      document.body.removeChild(mousePressedCircle);
+    }
+    catch(error) { }
   }
   
   SendGyroData()
@@ -211,10 +254,12 @@ export class RemotePage
     this.mouseCanvas = document.getElementById("canvas");
     this.SendGyroData();
 
-    // this.gyroAvailable = true;
+    this.gyroAvailable = true;
     
     if(this.gyroAvailable)
     {
+      this.insomnia.keepAwake();
+
       this.mc = new Hammer(this.mouseCanvas);
       this.mc.add(new Hammer.Pinch());
       this.mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
@@ -229,9 +274,6 @@ export class RemotePage
     }
     else
     {
-      document.getElementById("mouseLeftButton").remove();
-      document.getElementById("mouseRightButton").remove();
-
       this.mouseCanvas.innerHTML = 
         "<span id='containerCatch'>" +
           "<span id='appNameCatch'>AirMouse</span>" +  
