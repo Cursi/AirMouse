@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Settings</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="colorPattern">
+  <ion-list>
+    <ion-item class="colorPattern">
+        <ion-label class="settingsLabel">Movement sensitivity</ion-label>
+        <ion-range min="1" max="100" pin="true" [(ngModel)]="settings.movePreferenceFactor">
+          <ion-icon small range-left name="color-wand"></ion-icon>
+          <ion-icon range-right name="color-wand"></ion-icon>
+        </ion-range>
+      </ion-item>   
+      <ion-item class="colorPattern">
+          <ion-label class="settingsLabel">Scroll sensitivity</ion-label>
+          <ion-range min="1" max="100" pin="true" [(ngModel)]="settings.scrollPreferenceFactor">
+            <ion-icon small range-left name="color-wand"></ion-icon>
+            <ion-icon range-right name="color-wand"></ion-icon>
+          </ion-range>
+        </ion-item>
+        <ion-item class="colorPattern">
+            <ion-label class="settingsLabel">Zoom sensitivity</ion-label>
+            <ion-range min="1" max="100" pin="true" [(ngModel)]="settings.pinchSensitivity">
+              <ion-icon small range-left name="color-wand"></ion-icon>
+              <ion-icon range-right name="color-wand"></ion-icon>
+            </ion-range>
+          </ion-item>    
+  </ion-list>
+</ion-content>

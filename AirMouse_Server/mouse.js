@@ -6,12 +6,14 @@ const maxScreenDimension = Math.max(robot.getScreenSize().width, robot.getScreen
 
 const linearAccelerationFactor = 1.075;
 const quadraticAccelerationFactor = 0.25;
-const movePreferenceFactor = 0.7;
+
+var movePreferenceFactor = 0.7;
 var moveSensitivity = maxScreenDimension / 120 * movePreferenceFactor;
 
 const scrollSweetSpot = 200;
-const scrollPreferenceFactor = 0.6;
+var scrollPreferenceFactor = 0.6;
 var scrollSensitivity = scrollSweetSpot * scrollPreferenceFactor;
+
 var oldScrollX, oldScrollY;
 const scrollIntervalTimeout = 7;
 var scrollXInterval = null, scrollYInterval = null;
@@ -41,53 +43,6 @@ function MouseClick(clickType, isDouble)
 function MouseToggle(toggleType)
 {
     robot.mouseToggle(toggleType);
-}
-
-function KeepMouseScrolling()
-{
-    if (scrollXInterval == null && oldScrollX != 0)
-    {
-        let oldScrollXSign = Math.sign(oldScrollX);
-
-        scrollXInterval = setInterval(() =>
-        {
-            // Tricky code that needs to be changed            
-            scrollPortionX -= (1 - scrollPreferenceFactor) / 3;    
-                    
-            oldScrollX -= scrollPortionX * oldScrollXSign;           
-            robot.scrollMouse(scrollPortionX * oldScrollXSign, 0);
-
-            if(oldScrollXSign != Math.sign(oldScrollX))
-            {
-                scrollPortionX = 40;
-                oldScrollX = 0;                
-                clearInterval(scrollXInterval);
-                scrollXInterval = null;
-            }
-        }, scrollIntervalTimeout);
-    }
-
-    if (scrollYInterval == null && oldScrollY != 0)
-    {
-        let oldScrollYSign = Math.sign(oldScrollY);
-
-        scrollYInterval = setInterval(() =>
-        {
-            // Tricky code that needs to be changed
-            scrollPortionY -= (1 - scrollPreferenceFactor) / 3;
-
-            oldScrollY -= scrollPortionY * oldScrollYSign;
-            robot.scrollMouse(0, scrollPortionY * oldScrollYSign);
-
-            if(oldScrollYSign != Math.sign(oldScrollY))
-            {
-                scrollPortionY = 40;
-                oldScrollY = 0;
-                clearInterval(scrollYInterval);
-                scrollYInterval = null;
-            }
-        }, scrollIntervalTimeout);
-    }
 }
 
 function MouseScroll(scrollX, scrollY)

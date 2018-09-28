@@ -5,53 +5,66 @@ import { Insomnia } from '@ionic-native/insomnia';
 import { Gyroscope, GyroscopeOrientation, GyroscopeOptions } from '@ionic-native/gyroscope';
 import * as io from 'socket.io-client';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { HelpPage } from '../help/help';
+import { SettingsPage } from '../settings/settings';
 
 @IonicPage()
 @Component({
   selector: 'page-remote',
   templateUrl: 'remote.html',
-  providers: [ Gyroscope, Insomnia]
+  providers: [ Gyroscope, Insomnia ]
 })
 
 export class RemotePage
 {
-  constructor(public navCtrl: NavController, public navParams: NavParams, private gyroscope: Gyroscope, private insomnia: Insomnia) 
-  {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private gyroscope: Gyroscope, private insomnia: Insomnia) { }
 
-  }
+  helpPage: any = HelpPage;
+  settingsPage: any = SettingsPage;
 
-  gyroAvailable: boolean = true;
   socket: SocketIOClient.Socket = this.navParams.get("socket");
-
+  
+  // Get from local storage
+  settings =
+  {
+    movePreferenceFactor: 70,
+    scrollPreferenceFactor : 60,
+    pinchSensitivity: 40
+  };
+  settingsParams = 
+  {
+    socket: this.socket,
+    settings: this.settings
+  }
+  
+  gyroAvailable: boolean = true;
   gyroOptions: GyroscopeOptions =
   {
     frequency: 16
   };
-
   gyro =
   {
     gyroX: null,
-    gyroY: null,
     gyroZ: null
   };
-
-  epsilonGyroVelocity: number = 0.0115;
+  
+  epsilonGyroVelocity: number = 0.0130;
   
   scroll =
   {
     scrollX: null,
     scrollY: null
   };
-
+  
   mouseCanvas: any;
   mc: any;
-
-  doubleClickDelay: number = 150;
+  
+  doubleClickDelay: number = 200;
   numberOfTaps: number = 0;
   doubleClickTimer: any = null;
-
+  
   mousePressedDown: boolean = false;
-
+  
   DrawCircleTap(clientX, clientY, isScrollCircle)
   {
     if(clientX != null && clientY != null)
@@ -82,11 +95,11 @@ export class RemotePage
       {
         setTimeout(() => 
         {
-          document.body.removeChild(tapCircle);
+          this.mouseCanvas.removeChild(tapCircle);
         }, 300);
       }
 
-      document.body.appendChild(tapCircle);
+      this.mouseCanvas.appendChild(tapCircle);
     }
   }
 
@@ -104,21 +117,19 @@ export class RemotePage
         {
           case 1: 
           {
-            console.log("single tap");  
             this.wasSingleTap = true;
-
+            this.socket.emit('mouseSingleTap');
+            
             setTimeout(() =>
             {
               this.wasSingleTap = false;
-            }, 150);
-            // this.socket.emit('mouseSingleTap');
+            }, this.doubleClickDelay);
             break;
           }
           case 2:
-          {
+          {      
             this.wasSingleTap = false;
-            console.log("double tap");            
-            // this.socket.emit('mouseDoubleTap');
+            this.socket.emit('mouseDoubleTap');
             break;
           }
           default: break;
@@ -138,27 +149,17 @@ export class RemotePage
   
       this.scroll.scrollX = event.velocityX;
       this.scroll.scrollY = event.velocityY;
-  
-      console.log("mouseScroll");      
-      // this.socket.emit('mouseScroll', this.scroll); 
+            
+      this.socket.emit('mouseScroll', this.scroll); 
     }
   }
-
+  
   PanEnd()
   {
     if(this.mousePressedDown)
     {
       this.PressUp();
     }
-
-    console.log("mouseScrollEnd");    
-    // this.socket.emit('mouseScrollEnd');
-  }
-
-  RightTap()
-  {
-    console.log("mouseRightTap");    
-    // this.socket.emit('mouseRightTap');
   }
 
   wasSingleTap: boolean = false;  
@@ -170,14 +171,12 @@ export class RemotePage
 
     if(this.wasSingleTap)
     {
-      console.log("hold");
+      this.socket.emit('mousePressDown');
     }
     else
     {
-      console.log("right click");
+      this.socket.emit('mouseRightTap');
     }
-
-    // this.socket.emit('mousePressDown');
   }
 
   PressUp()
@@ -187,8 +186,7 @@ export class RemotePage
     
     this.RemoveCircle();
 
-    console.log("mousePressUp");    
-    // this.socket.emit('mousePressUp');
+    this.socket.emit('mousePressUp');
   }
 
   Pinch(event)
@@ -196,8 +194,7 @@ export class RemotePage
     if(!this.mousePressedDown)
     {
       this.DrawCircleTap(event.srcEvent.clientX, event.srcEvent.clientY, true);
-      console.log("mousePinch");      
-      // this.socket.emit('mousePinch', event.scale);
+      this.socket.emit('mousePinch', event.scale);
     }
   }
 
@@ -207,13 +204,10 @@ export class RemotePage
     {
       this.mousePressedDown = false;
       this.RemoveCircle();
-
-      console.log("we got here");
     }
     else
     {
-      console.log("mousePinchEnd");
-      // this.socket.emit('mousePinchEnd');
+      this.socket.emit('mousePinchEnd');
     }
   }
 
@@ -223,7 +217,7 @@ export class RemotePage
 
     try
     {
-      document.body.removeChild(mousePressedCircle);
+      this.mouseCanvas.removeChild(mousePressedCircle);
     }
     catch(error) { }
   }
@@ -238,7 +232,7 @@ export class RemotePage
         {
           this.gyro.gyroX = orientation.x;
           this.gyro.gyroZ = orientation.z;
-    
+          
           this.socket.emit ('gyroChanged', this.gyro);
         }
       });

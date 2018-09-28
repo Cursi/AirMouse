@@ -9,12 +9,16 @@ import { HomePage } from '../pages/home/home';
 import { RemotePage } from '../pages/remote/remote';
 
 import "hammerjs";
+import { HelpPage } from '../pages/help/help';
+import { SettingsPage } from '../pages/settings/settings';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
-    RemotePage
+    RemotePage,
+    HelpPage,
+    SettingsPage
   ],
   imports: [
     BrowserModule,
@@ -24,7 +28,9 @@ import "hammerjs";
   entryComponents: [
     MyApp,
     HomePage,
-    RemotePage    
+    RemotePage,
+    HelpPage,
+    SettingsPage
   ],
   providers: [
     StatusBar,

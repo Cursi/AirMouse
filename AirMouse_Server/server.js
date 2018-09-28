@@ -60,11 +60,6 @@ io.on('connection', (socket) =>
     mouse.MouseScroll(scroll.scrollX, scroll.scrollY);
   });
 
-  socket.on('mouseScrollEnd', () =>
-  {
-    mouse.KeepMouseScrolling();
-  });
-
   socket.on('mousePressDown', () =>
   {
     mouse.MouseToggle("down");

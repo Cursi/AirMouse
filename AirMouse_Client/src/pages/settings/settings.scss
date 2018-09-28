@@ -1,0 +1,17 @@
+.colorPattern
+{
+    background-color: color($colors, light, base);
+    color: color($colors, dark, base);
+}
+
+page-settings .scroll-content 
+{
+    overflow: hidden;
+}
+
+.settingsLabel
+{
+    margin:0;
+    margin-top:13px;
+    font-size: 18px;
+}

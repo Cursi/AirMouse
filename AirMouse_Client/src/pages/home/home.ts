@@ -17,6 +17,7 @@ export class HomePage implements OnInit
 {
   IP: string;
   PORT: string;
+  connectLabel: string;
 
   socket: SocketIOClient.Socket;
   connectDisabled: boolean = false;
@@ -35,6 +36,7 @@ export class HomePage implements OnInit
   Connect()
   {
     const self = this;
+    this.connectLabel = "Connecting...";
     this.connectDisabled = true;
 
     this.socket = io(this.IP + ":" + this.PORT, 
@@ -57,6 +59,7 @@ export class HomePage implements OnInit
     this.socket.on('connect_error', () => 
     {
       self.connectDisabled = false;
+      self.connectLabel = "Connect";
       self.ShowConnectionAlert();
     });
   }
@@ -68,6 +71,7 @@ export class HomePage implements OnInit
 
   ngOnInit()
   {
+    this.connectLabel = "Connect";
     this.IP = "192.168.43.229";
     this.PORT = "1234";
   }
