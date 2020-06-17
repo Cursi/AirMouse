@@ -128,7 +128,6 @@ module.exports =
     MouseToggle: MouseToggle,
 
     MouseScroll: MouseScroll,
-    KeepMouseScrolling: KeepMouseScrolling,
     
     MousePinch: MousePinch,
     oldPinchScale: oldPinchScale

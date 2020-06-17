@@ -53,7 +53,7 @@ function createWindow ()
   {
     show: true,
     width: 260, 
-    height: 260, 
+    height: 260,
     maximizable: true,
     resizable: true,
     icon: iconPath

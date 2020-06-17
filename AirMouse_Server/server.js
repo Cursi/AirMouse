@@ -1,14 +1,14 @@
 const app = require('express')();
 const http = require('http');
-const ip = require("ip");
 const socketIo = require('socket.io');
+const utils = require("./utils");
 
 app.get('/', function(req, res)
 {
   res.send('<h1>Hello world</h1>');
 });
 
-const IP = ip.address();
+const IP = utils.GetLocalExternalIP();
 const PORT = 1234;
 
 const server = http.Server(app);

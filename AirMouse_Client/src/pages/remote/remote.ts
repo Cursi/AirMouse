@@ -33,7 +33,7 @@ export class RemotePage
   };
   settingsParams = 
   {
-    socket: this.socket,
+      socket: this.socket,
     settings: this.settings
   }
   
